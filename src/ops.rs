@@ -9978,6 +9978,526 @@ pub fn svgload_buffer_with_opts(
     }
 }
 
+/// VipsForeignLoadSvgSource (svgload_source), load svg from source, priority=-5, untrusted, is_a_source, get_flags, get_flags_filename, header, load
+/// source: `&VipsSource` -> Source to load from
+/// returns `VipsImage` - Output image
+pub fn svgload_source(source: &VipsSource) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_svgload_source(source_in, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::SvgloadSourceError,
+        )
+    }
+}
+
+/// Options for svgload_source operation
+#[derive(Clone, Debug)]
+pub struct SvgloadSourceOptions {
+    /// dpi: `f64` -> Render at this DPI
+    /// min: 0.001, max: 100000, default: 72
+    pub dpi: f64,
+    /// scale: `f64` -> Scale output by this factor
+    /// min: 0.001, max: 100000, default: 1
+    pub scale: f64,
+    /// unlimited: `bool` -> Allow SVG of any size
+    /// default: false
+    pub unlimited: bool,
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for SvgloadSourceOptions {
+    fn default() -> Self {
+        SvgloadSourceOptions {
+            dpi: f64::from(72),
+            scale: f64::from(1),
+            unlimited: false,
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadSvgSource (svgload_source), load svg from source, priority=-5, untrusted, is_a_source, get_flags, get_flags_filename, header, load
+/// source: `&VipsSource` -> Source to load from
+/// svgload_source_options: `&SvgloadSourceOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn svgload_source_with_opts(
+    source: &VipsSource,
+    svgload_source_options: &SvgloadSourceOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let dpi_in: f64 = svgload_source_options.dpi;
+        let dpi_in_name = utils::new_c_string("dpi")?;
+
+        let scale_in: f64 = svgload_source_options.scale;
+        let scale_in_name = utils::new_c_string("scale")?;
+
+        let unlimited_in: i32 = if svgload_source_options.unlimited {
+            1
+        } else {
+            0
+        };
+        let unlimited_in_name = utils::new_c_string("unlimited")?;
+
+        let flags_in: i32 = svgload_source_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if svgload_source_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = svgload_source_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = svgload_source_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if svgload_source_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_svgload_source(
+            source_in,
+            &mut out_out,
+            dpi_in_name.as_ptr(),
+            dpi_in,
+            scale_in_name.as_ptr(),
+            scale_in,
+            unlimited_in_name.as_ptr(),
+            unlimited_in,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::SvgloadSourceError,
+        )
+    }
+}
+
+/// VipsForeignLoadJp2kFile (jp2kload), load JPEG2000 image (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, untrusted, is_a, get_flags, header, load
+/// filename: `&str` -> Filename to load from
+/// returns `VipsImage` - Output image
+pub fn jp_2kload(filename: &str) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_jp2kload(filename_in.as_ptr(), &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadError,
+        )
+    }
+}
+
+/// Options for jp_2kload operation
+#[derive(Clone, Debug)]
+pub struct Jp2KloadOptions {
+    /// page: `i32` -> Load this page from the image
+    /// min: 0, max: 100000, default: 0
+    pub page: i32,
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for Jp2KloadOptions {
+    fn default() -> Self {
+        Jp2KloadOptions {
+            page: i32::from(0),
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJp2kFile (jp2kload), load JPEG2000 image (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, untrusted, is_a, get_flags, header, load
+/// filename: `&str` -> Filename to load from
+/// jp_2kload_options: `&Jp2KloadOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jp_2kload_with_opts(
+    filename: &str,
+    jp_2kload_options: &Jp2KloadOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let page_in: i32 = jp_2kload_options.page;
+        let page_in_name = utils::new_c_string("page")?;
+
+        let flags_in: i32 = jp_2kload_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jp_2kload_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jp_2kload_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jp_2kload_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jp_2kload_options.revalidate { 1 } else { 0 };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jp2kload(
+            filename_in.as_ptr(),
+            &mut out_out,
+            page_in_name.as_ptr(),
+            page_in,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadError,
+        )
+    }
+}
+
+/// VipsForeignLoadJp2kBuffer (jp2kload_buffer), load JPEG2000 image, priority=0, untrusted, is_a_buffer, get_flags, header, load
+/// buffer: `&[u8]` -> Buffer to load from
+/// returns `VipsImage` - Output image
+pub fn jp_2kload_buffer(buffer: &[u8]) -> Result<VipsImage> {
+    unsafe {
+        let buffer_in: *mut c_void = buffer.as_ptr() as *mut c_void;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response =
+            bindings::vips_jp2kload_buffer(buffer_in, buffer.len() as u64, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadBufferError,
+        )
+    }
+}
+
+/// Options for jp_2kload_buffer operation
+#[derive(Clone, Debug)]
+pub struct Jp2KloadBufferOptions {
+    /// page: `i32` -> Load this page from the image
+    /// min: 0, max: 100000, default: 0
+    pub page: i32,
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for Jp2KloadBufferOptions {
+    fn default() -> Self {
+        Jp2KloadBufferOptions {
+            page: i32::from(0),
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJp2kBuffer (jp2kload_buffer), load JPEG2000 image, priority=0, untrusted, is_a_buffer, get_flags, header, load
+/// buffer: `&[u8]` -> Buffer to load from
+/// jp_2kload_buffer_options: `&Jp2KloadBufferOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jp_2kload_buffer_with_opts(
+    buffer: &[u8],
+    jp_2kload_buffer_options: &Jp2KloadBufferOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let buffer_in: *mut c_void = buffer.as_ptr() as *mut c_void;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let page_in: i32 = jp_2kload_buffer_options.page;
+        let page_in_name = utils::new_c_string("page")?;
+
+        let flags_in: i32 = jp_2kload_buffer_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jp_2kload_buffer_options.memory {
+            1
+        } else {
+            0
+        };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jp_2kload_buffer_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jp_2kload_buffer_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jp_2kload_buffer_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jp2kload_buffer(
+            buffer_in,
+            buffer.len() as u64,
+            &mut out_out,
+            page_in_name.as_ptr(),
+            page_in,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadBufferError,
+        )
+    }
+}
+
+/// VipsForeignLoadJp2kSource (jp2kload_source), load JPEG2000 image, priority=0, untrusted, is_a_source, get_flags, header, load
+/// source: `&VipsSource` -> Source to load from
+/// returns `VipsImage` - Output image
+pub fn jp_2kload_source(source: &VipsSource) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_jp2kload_source(source_in, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadSourceError,
+        )
+    }
+}
+
+/// Options for jp_2kload_source operation
+#[derive(Clone, Debug)]
+pub struct Jp2KloadSourceOptions {
+    /// page: `i32` -> Load this page from the image
+    /// min: 0, max: 100000, default: 0
+    pub page: i32,
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for Jp2KloadSourceOptions {
+    fn default() -> Self {
+        Jp2KloadSourceOptions {
+            page: i32::from(0),
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJp2kSource (jp2kload_source), load JPEG2000 image, priority=0, untrusted, is_a_source, get_flags, header, load
+/// source: `&VipsSource` -> Source to load from
+/// jp_2kload_source_options: `&Jp2KloadSourceOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jp_2kload_source_with_opts(
+    source: &VipsSource,
+    jp_2kload_source_options: &Jp2KloadSourceOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let page_in: i32 = jp_2kload_source_options.page;
+        let page_in_name = utils::new_c_string("page")?;
+
+        let flags_in: i32 = jp_2kload_source_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jp_2kload_source_options.memory {
+            1
+        } else {
+            0
+        };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jp_2kload_source_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jp_2kload_source_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jp_2kload_source_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jp2kload_source(
+            source_in,
+            &mut out_out,
+            page_in_name.as_ptr(),
+            page_in,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::Jp2KloadSourceError,
+        )
+    }
+}
+
 /// VipsForeignLoadNsgifFile (gifload), load GIF with libnsgif (.gif), priority=50, is_a, get_flags, get_flags_filename, header, load
 /// filename: `&str` -> Filename to load from
 /// returns `VipsImage` - Output image
@@ -11026,6 +11546,155 @@ pub fn jpegload_buffer_with_opts(
     }
 }
 
+/// VipsForeignLoadJpegSource (jpegload_source), load image from jpeg source, priority=50, is_a_source, get_flags, get_flags_filename, header, load
+/// source: `&VipsSource` -> Source to load from
+/// returns `VipsImage` - Output image
+pub fn jpegload_source(source: &VipsSource) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_jpegload_source(source_in, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JpegloadSourceError,
+        )
+    }
+}
+
+/// Options for jpegload_source operation
+#[derive(Clone, Debug)]
+pub struct JpegloadSourceOptions {
+    /// shrink: `i32` -> Shrink factor on load
+    /// min: 1, max: 16, default: 1
+    pub shrink: i32,
+    /// autorotate: `bool` -> Rotate image using exif orientation
+    /// default: false
+    pub autorotate: bool,
+    /// unlimited: `bool` -> Remove all denial of service limits
+    /// default: false
+    pub unlimited: bool,
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for JpegloadSourceOptions {
+    fn default() -> Self {
+        JpegloadSourceOptions {
+            shrink: i32::from(1),
+            autorotate: false,
+            unlimited: false,
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJpegSource (jpegload_source), load image from jpeg source, priority=50, is_a_source, get_flags, get_flags_filename, header, load
+/// source: `&VipsSource` -> Source to load from
+/// jpegload_source_options: `&JpegloadSourceOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jpegload_source_with_opts(
+    source: &VipsSource,
+    jpegload_source_options: &JpegloadSourceOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let shrink_in: i32 = jpegload_source_options.shrink;
+        let shrink_in_name = utils::new_c_string("shrink")?;
+
+        let autorotate_in: i32 = if jpegload_source_options.autorotate {
+            1
+        } else {
+            0
+        };
+        let autorotate_in_name = utils::new_c_string("autorotate")?;
+
+        let unlimited_in: i32 = if jpegload_source_options.unlimited {
+            1
+        } else {
+            0
+        };
+        let unlimited_in_name = utils::new_c_string("unlimited")?;
+
+        let flags_in: i32 = jpegload_source_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jpegload_source_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jpegload_source_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jpegload_source_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jpegload_source_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jpegload_source(
+            source_in,
+            &mut out_out,
+            shrink_in_name.as_ptr(),
+            shrink_in,
+            autorotate_in_name.as_ptr(),
+            autorotate_in,
+            unlimited_in_name.as_ptr(),
+            unlimited_in,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JpegloadSourceError,
+        )
+    }
+}
+
 /// VipsForeignLoadWebpFile (webpload), load webp from file (.webp), priority=200, is_a, get_flags, get_flags_filename, header, load
 /// filename: `&str` -> Filename to load from
 /// returns `VipsImage` - Output image
@@ -11897,6 +12566,223 @@ pub fn tiffload_source_with_opts(
     }
 }
 
+/// VipsForeignLoadFitsFile (fitsload), load a FITS image (.fits, .fit, .fts), priority=-50, untrusted, is_a, get_flags, get_flags_filename, header, load
+/// filename: `&str` -> Filename to load from
+/// returns `VipsImage` - Output image
+pub fn fitsload(filename: &str) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_fitsload(filename_in.as_ptr(), &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::FitsloadError,
+        )
+    }
+}
+
+/// Options for fitsload operation
+#[derive(Clone, Debug)]
+pub struct FitsloadOptions {
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for FitsloadOptions {
+    fn default() -> Self {
+        FitsloadOptions {
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadFitsFile (fitsload), load a FITS image (.fits, .fit, .fts), priority=-50, untrusted, is_a, get_flags, get_flags_filename, header, load
+/// filename: `&str` -> Filename to load from
+/// fitsload_options: `&FitsloadOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn fitsload_with_opts(filename: &str, fitsload_options: &FitsloadOptions) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let flags_in: i32 = fitsload_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if fitsload_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = fitsload_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = fitsload_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if fitsload_options.revalidate { 1 } else { 0 };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_fitsload(
+            filename_in.as_ptr(),
+            &mut out_out,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::FitsloadError,
+        )
+    }
+}
+
+/// VipsForeignLoadOpenexr (openexrload), load an OpenEXR image (.exr), priority=200, untrusted, is_a, get_flags, get_flags_filename, header, load
+/// filename: `&str` -> Filename to load from
+/// returns `VipsImage` - Output image
+pub fn openexrload(filename: &str) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_openexrload(filename_in.as_ptr(), &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::OpenexrloadError,
+        )
+    }
+}
+
+/// Options for openexrload operation
+#[derive(Clone, Debug)]
+pub struct OpenexrloadOptions {
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for OpenexrloadOptions {
+    fn default() -> Self {
+        OpenexrloadOptions {
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadOpenexr (openexrload), load an OpenEXR image (.exr), priority=200, untrusted, is_a, get_flags, get_flags_filename, header, load
+/// filename: `&str` -> Filename to load from
+/// openexrload_options: `&OpenexrloadOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn openexrload_with_opts(
+    filename: &str,
+    openexrload_options: &OpenexrloadOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let flags_in: i32 = openexrload_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if openexrload_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = openexrload_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = openexrload_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if openexrload_options.revalidate { 1 } else { 0 };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_openexrload(
+            filename_in.as_ptr(),
+            &mut out_out,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::OpenexrloadError,
+        )
+    }
+}
+
 /// VipsForeignLoadHeifFile (heifload), load a HEIF image (.heic, .heif, .avif), priority=0, is_a, get_flags, header, load
 /// filename: `&str` -> Filename to load from
 /// returns `VipsImage` - Output image
@@ -12354,6 +13240,343 @@ pub fn heifload_source_with_opts(
             vips_op_response,
             VipsImage { ctx: out_out },
             Error::HeifloadSourceError,
+        )
+    }
+}
+
+/// VipsForeignLoadJxlFile (jxlload), load JPEG-XL image (.jxl), priority=0, untrusted, is_a, get_flags, header, load
+/// filename: `&str` -> Filename to load from
+/// returns `VipsImage` - Output image
+pub fn jxlload(filename: &str) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_jxlload(filename_in.as_ptr(), &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadError,
+        )
+    }
+}
+
+/// Options for jxlload operation
+#[derive(Clone, Debug)]
+pub struct JxlloadOptions {
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for JxlloadOptions {
+    fn default() -> Self {
+        JxlloadOptions {
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJxlFile (jxlload), load JPEG-XL image (.jxl), priority=0, untrusted, is_a, get_flags, header, load
+/// filename: `&str` -> Filename to load from
+/// jxlload_options: `&JxlloadOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jxlload_with_opts(filename: &str, jxlload_options: &JxlloadOptions) -> Result<VipsImage> {
+    unsafe {
+        let filename_in: CString = utils::new_c_string(filename)?;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let flags_in: i32 = jxlload_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jxlload_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jxlload_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jxlload_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jxlload_options.revalidate { 1 } else { 0 };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jxlload(
+            filename_in.as_ptr(),
+            &mut out_out,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadError,
+        )
+    }
+}
+
+/// VipsForeignLoadJxlBuffer (jxlload_buffer), load JPEG-XL image, priority=0, untrusted, is_a_buffer, get_flags, header, load
+/// buffer: `&[u8]` -> Buffer to load from
+/// returns `VipsImage` - Output image
+pub fn jxlload_buffer(buffer: &[u8]) -> Result<VipsImage> {
+    unsafe {
+        let buffer_in: *mut c_void = buffer.as_ptr() as *mut c_void;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response =
+            bindings::vips_jxlload_buffer(buffer_in, buffer.len() as u64, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadBufferError,
+        )
+    }
+}
+
+/// Options for jxlload_buffer operation
+#[derive(Clone, Debug)]
+pub struct JxlloadBufferOptions {
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for JxlloadBufferOptions {
+    fn default() -> Self {
+        JxlloadBufferOptions {
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJxlBuffer (jxlload_buffer), load JPEG-XL image, priority=0, untrusted, is_a_buffer, get_flags, header, load
+/// buffer: `&[u8]` -> Buffer to load from
+/// jxlload_buffer_options: `&JxlloadBufferOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jxlload_buffer_with_opts(
+    buffer: &[u8],
+    jxlload_buffer_options: &JxlloadBufferOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let buffer_in: *mut c_void = buffer.as_ptr() as *mut c_void;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let flags_in: i32 = jxlload_buffer_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jxlload_buffer_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jxlload_buffer_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jxlload_buffer_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jxlload_buffer_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jxlload_buffer(
+            buffer_in,
+            buffer.len() as u64,
+            &mut out_out,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadBufferError,
+        )
+    }
+}
+
+/// VipsForeignLoadJxlSource (jxlload_source), load JPEG-XL image, priority=0, untrusted, is_a_source, get_flags, header, load
+/// source: `&VipsSource` -> Source to load from
+/// returns `VipsImage` - Output image
+pub fn jxlload_source(source: &VipsSource) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let vips_op_response = bindings::vips_jxlload_source(source_in, &mut out_out, NULL);
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadSourceError,
+        )
+    }
+}
+
+/// Options for jxlload_source operation
+#[derive(Clone, Debug)]
+pub struct JxlloadSourceOptions {
+    /// flags: `ForeignFlags` -> Flags for this file
+    ///  `None` -> VIPS_FOREIGN_NONE = 0 [DEFAULT]
+    ///  `Partial` -> VIPS_FOREIGN_PARTIAL = 1
+    ///  `Bigendian` -> VIPS_FOREIGN_BIGENDIAN = 2
+    ///  `Sequential` -> VIPS_FOREIGN_SEQUENTIAL = 4
+    ///  `All` -> VIPS_FOREIGN_ALL = 7
+    pub flags: ForeignFlags,
+    /// memory: `bool` -> Force open via memory
+    /// default: false
+    pub memory: bool,
+    /// access: `Access` -> Required access pattern for this file
+    ///  `Random` -> VIPS_ACCESS_RANDOM = 0 [DEFAULT]
+    ///  `Sequential` -> VIPS_ACCESS_SEQUENTIAL = 1
+    ///  `SequentialUnbuffered` -> VIPS_ACCESS_SEQUENTIAL_UNBUFFERED = 2
+    ///  `Last` -> VIPS_ACCESS_LAST = 3
+    pub access: Access,
+    /// fail_on: `FailOn` -> Error level to fail on
+    ///  `None` -> VIPS_FAIL_ON_NONE = 0 [DEFAULT]
+    ///  `Truncated` -> VIPS_FAIL_ON_TRUNCATED = 1
+    ///  `Error` -> VIPS_FAIL_ON_ERROR = 2
+    ///  `Warning` -> VIPS_FAIL_ON_WARNING = 3
+    ///  `Last` -> VIPS_FAIL_ON_LAST = 4
+    pub fail_on: FailOn,
+    /// revalidate: `bool` -> Don't use a cached result for this operation
+    /// default: false
+    pub revalidate: bool,
+}
+
+impl std::default::Default for JxlloadSourceOptions {
+    fn default() -> Self {
+        JxlloadSourceOptions {
+            flags: ForeignFlags::None,
+            memory: false,
+            access: Access::Random,
+            fail_on: FailOn::None,
+            revalidate: false,
+        }
+    }
+}
+
+/// VipsForeignLoadJxlSource (jxlload_source), load JPEG-XL image, priority=0, untrusted, is_a_source, get_flags, header, load
+/// source: `&VipsSource` -> Source to load from
+/// jxlload_source_options: `&JxlloadSourceOptions` -> optional arguments
+/// returns `VipsImage` - Output image
+pub fn jxlload_source_with_opts(
+    source: &VipsSource,
+    jxlload_source_options: &JxlloadSourceOptions,
+) -> Result<VipsImage> {
+    unsafe {
+        let source_in: *mut bindings::VipsSource = source.ctx;
+        let mut out_out: *mut bindings::VipsImage = null_mut();
+
+        let flags_in: i32 = jxlload_source_options.flags as i32;
+        let flags_in_name = utils::new_c_string("flags")?;
+
+        let memory_in: i32 = if jxlload_source_options.memory { 1 } else { 0 };
+        let memory_in_name = utils::new_c_string("memory")?;
+
+        let access_in: i32 = jxlload_source_options.access as i32;
+        let access_in_name = utils::new_c_string("access")?;
+
+        let fail_on_in: i32 = jxlload_source_options.fail_on as i32;
+        let fail_on_in_name = utils::new_c_string("fail-on")?;
+
+        let revalidate_in: i32 = if jxlload_source_options.revalidate {
+            1
+        } else {
+            0
+        };
+        let revalidate_in_name = utils::new_c_string("revalidate")?;
+
+        let vips_op_response = bindings::vips_jxlload_source(
+            source_in,
+            &mut out_out,
+            flags_in_name.as_ptr(),
+            flags_in,
+            memory_in_name.as_ptr(),
+            memory_in,
+            access_in_name.as_ptr(),
+            access_in,
+            fail_on_in_name.as_ptr(),
+            fail_on_in,
+            revalidate_in_name.as_ptr(),
+            revalidate_in,
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            VipsImage { ctx: out_out },
+            Error::JxlloadSourceError,
         )
     }
 }
@@ -13717,6 +14940,440 @@ pub fn radsave_target_with_opts(
     }
 }
 
+/// VipsForeignSaveJp2kFile (jp2ksave), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// filename: `&str` -> Filename to load from
+
+pub fn jp_2ksave(inp: &VipsImage, filename: &str) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let filename_in: CString = utils::new_c_string(filename)?;
+
+        let vips_op_response = bindings::vips_jp2ksave(inp_in, filename_in.as_ptr(), NULL);
+        utils::result(vips_op_response, (), Error::Jp2KsaveError)
+    }
+}
+
+/// Options for jp_2ksave operation
+#[derive(Clone, Debug)]
+pub struct Jp2KsaveOptions {
+    /// tile_width: `i32` -> Tile width in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_width: i32,
+    /// tile_height: `i32` -> Tile height in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_height: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Q factor
+    /// min: 1, max: 100, default: 48
+    pub q: i32,
+    /// subsample_mode: `ForeignSubsample` -> Select chroma subsample operation mode
+    ///  `Auto` -> VIPS_FOREIGN_SUBSAMPLE_AUTO = 0
+    ///  `On` -> VIPS_FOREIGN_SUBSAMPLE_ON = 1
+    ///  `Off` -> VIPS_FOREIGN_SUBSAMPLE_OFF = 2 [DEFAULT]
+    ///  `Last` -> VIPS_FOREIGN_SUBSAMPLE_LAST = 3
+    pub subsample_mode: ForeignSubsample,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for Jp2KsaveOptions {
+    fn default() -> Self {
+        Jp2KsaveOptions {
+            tile_width: i32::from(512),
+            tile_height: i32::from(512),
+            lossless: false,
+            q: i32::from(48),
+            subsample_mode: ForeignSubsample::Off,
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJp2kFile (jp2ksave), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// filename: `&str` -> Filename to load from
+/// jp_2ksave_options: `&Jp2KsaveOptions` -> optional arguments
+
+pub fn jp_2ksave_with_opts(
+    inp: &VipsImage,
+    filename: &str,
+    jp_2ksave_options: &Jp2KsaveOptions,
+) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let filename_in: CString = utils::new_c_string(filename)?;
+
+        let tile_width_in: i32 = jp_2ksave_options.tile_width;
+        let tile_width_in_name = utils::new_c_string("tile-width")?;
+
+        let tile_height_in: i32 = jp_2ksave_options.tile_height;
+        let tile_height_in_name = utils::new_c_string("tile-height")?;
+
+        let lossless_in: i32 = if jp_2ksave_options.lossless { 1 } else { 0 };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jp_2ksave_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let subsample_mode_in: i32 = jp_2ksave_options.subsample_mode as i32;
+        let subsample_mode_in_name = utils::new_c_string("subsample-mode")?;
+
+        let keep_in: i32 = jp_2ksave_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jp_2ksave_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jp_2ksave_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jp_2ksave_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jp2ksave(
+            inp_in,
+            filename_in.as_ptr(),
+            tile_width_in_name.as_ptr(),
+            tile_width_in,
+            tile_height_in_name.as_ptr(),
+            tile_height_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            subsample_mode_in_name.as_ptr(),
+            subsample_mode_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(vips_op_response, (), Error::Jp2KsaveError)
+    }
+}
+
+/// VipsForeignSaveJp2kBuffer (jp2ksave_buffer), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// returns `Vec<u8>` - Buffer to save to
+pub fn jp_2ksave_buffer(inp: &VipsImage) -> Result<Vec<u8>> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let mut buffer_buf_size: u64 = 0;
+        let mut buffer_out: *mut c_void = null_mut();
+
+        let vips_op_response =
+            bindings::vips_jp2ksave_buffer(inp_in, &mut buffer_out, &mut buffer_buf_size, NULL);
+        utils::result(
+            vips_op_response,
+            utils::new_byte_array(buffer_out, buffer_buf_size),
+            Error::Jp2KsaveBufferError,
+        )
+    }
+}
+
+/// Options for jp_2ksave_buffer operation
+#[derive(Clone, Debug)]
+pub struct Jp2KsaveBufferOptions {
+    /// tile_width: `i32` -> Tile width in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_width: i32,
+    /// tile_height: `i32` -> Tile height in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_height: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Q factor
+    /// min: 1, max: 100, default: 48
+    pub q: i32,
+    /// subsample_mode: `ForeignSubsample` -> Select chroma subsample operation mode
+    ///  `Auto` -> VIPS_FOREIGN_SUBSAMPLE_AUTO = 0
+    ///  `On` -> VIPS_FOREIGN_SUBSAMPLE_ON = 1
+    ///  `Off` -> VIPS_FOREIGN_SUBSAMPLE_OFF = 2 [DEFAULT]
+    ///  `Last` -> VIPS_FOREIGN_SUBSAMPLE_LAST = 3
+    pub subsample_mode: ForeignSubsample,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for Jp2KsaveBufferOptions {
+    fn default() -> Self {
+        Jp2KsaveBufferOptions {
+            tile_width: i32::from(512),
+            tile_height: i32::from(512),
+            lossless: false,
+            q: i32::from(48),
+            subsample_mode: ForeignSubsample::Off,
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJp2kBuffer (jp2ksave_buffer), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// jp_2ksave_buffer_options: `&Jp2KsaveBufferOptions` -> optional arguments
+/// returns `Vec<u8>` - Buffer to save to
+pub fn jp_2ksave_buffer_with_opts(
+    inp: &VipsImage,
+    jp_2ksave_buffer_options: &Jp2KsaveBufferOptions,
+) -> Result<Vec<u8>> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let mut buffer_buf_size: u64 = 0;
+        let mut buffer_out: *mut c_void = null_mut();
+
+        let tile_width_in: i32 = jp_2ksave_buffer_options.tile_width;
+        let tile_width_in_name = utils::new_c_string("tile-width")?;
+
+        let tile_height_in: i32 = jp_2ksave_buffer_options.tile_height;
+        let tile_height_in_name = utils::new_c_string("tile-height")?;
+
+        let lossless_in: i32 = if jp_2ksave_buffer_options.lossless {
+            1
+        } else {
+            0
+        };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jp_2ksave_buffer_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let subsample_mode_in: i32 = jp_2ksave_buffer_options.subsample_mode as i32;
+        let subsample_mode_in_name = utils::new_c_string("subsample-mode")?;
+
+        let keep_in: i32 = jp_2ksave_buffer_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jp_2ksave_buffer_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jp_2ksave_buffer_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jp_2ksave_buffer_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jp2ksave_buffer(
+            inp_in,
+            &mut buffer_out,
+            &mut buffer_buf_size,
+            tile_width_in_name.as_ptr(),
+            tile_width_in,
+            tile_height_in_name.as_ptr(),
+            tile_height_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            subsample_mode_in_name.as_ptr(),
+            subsample_mode_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            utils::new_byte_array(buffer_out, buffer_buf_size),
+            Error::Jp2KsaveBufferError,
+        )
+    }
+}
+
+/// VipsForeignSaveJp2kTarget (jp2ksave_target), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// target: `&VipsTarget` -> Target to save to
+
+pub fn jp_2ksave_target(inp: &VipsImage, target: &VipsTarget) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let target_in: *mut bindings::VipsTarget = target.ctx;
+
+        let vips_op_response = bindings::vips_jp2ksave_target(inp_in, target_in, NULL);
+        utils::result(vips_op_response, (), Error::Jp2KsaveTargetError)
+    }
+}
+
+/// Options for jp_2ksave_target operation
+#[derive(Clone, Debug)]
+pub struct Jp2KsaveTargetOptions {
+    /// tile_width: `i32` -> Tile width in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_width: i32,
+    /// tile_height: `i32` -> Tile height in pixels
+    /// min: 1, max: 32768, default: 512
+    pub tile_height: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Q factor
+    /// min: 1, max: 100, default: 48
+    pub q: i32,
+    /// subsample_mode: `ForeignSubsample` -> Select chroma subsample operation mode
+    ///  `Auto` -> VIPS_FOREIGN_SUBSAMPLE_AUTO = 0
+    ///  `On` -> VIPS_FOREIGN_SUBSAMPLE_ON = 1
+    ///  `Off` -> VIPS_FOREIGN_SUBSAMPLE_OFF = 2 [DEFAULT]
+    ///  `Last` -> VIPS_FOREIGN_SUBSAMPLE_LAST = 3
+    pub subsample_mode: ForeignSubsample,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for Jp2KsaveTargetOptions {
+    fn default() -> Self {
+        Jp2KsaveTargetOptions {
+            tile_width: i32::from(512),
+            tile_height: i32::from(512),
+            lossless: false,
+            q: i32::from(48),
+            subsample_mode: ForeignSubsample::Off,
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJp2kTarget (jp2ksave_target), save image in JPEG2000 format (.j2k, .jp2, .jpt, .j2c, .jpc), priority=0, any
+/// inp: `&VipsImage` -> Image to save
+/// target: `&VipsTarget` -> Target to save to
+/// jp_2ksave_target_options: `&Jp2KsaveTargetOptions` -> optional arguments
+
+pub fn jp_2ksave_target_with_opts(
+    inp: &VipsImage,
+    target: &VipsTarget,
+    jp_2ksave_target_options: &Jp2KsaveTargetOptions,
+) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let target_in: *mut bindings::VipsTarget = target.ctx;
+
+        let tile_width_in: i32 = jp_2ksave_target_options.tile_width;
+        let tile_width_in_name = utils::new_c_string("tile-width")?;
+
+        let tile_height_in: i32 = jp_2ksave_target_options.tile_height;
+        let tile_height_in_name = utils::new_c_string("tile-height")?;
+
+        let lossless_in: i32 = if jp_2ksave_target_options.lossless {
+            1
+        } else {
+            0
+        };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jp_2ksave_target_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let subsample_mode_in: i32 = jp_2ksave_target_options.subsample_mode as i32;
+        let subsample_mode_in_name = utils::new_c_string("subsample-mode")?;
+
+        let keep_in: i32 = jp_2ksave_target_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jp_2ksave_target_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jp_2ksave_target_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jp_2ksave_target_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jp2ksave_target(
+            inp_in,
+            target_in,
+            tile_width_in_name.as_ptr(),
+            tile_width_in,
+            tile_height_in_name.as_ptr(),
+            tile_height_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            subsample_mode_in_name.as_ptr(),
+            subsample_mode_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(vips_op_response, (), Error::Jp2KsaveTargetError)
+    }
+}
+
 /// VipsForeignSaveCgifFile (gifsave), save as gif (.gif), priority=0, rgba-only
 /// inp: `&VipsImage` -> Image to save
 /// filename: `&str` -> Filename to save to
@@ -14196,7 +15853,7 @@ pub fn gifsave_target_with_opts(
     }
 }
 
-/// VipsForeignSavePngFile (pngsave), save image to png file (.png), priority=0, rgba
+/// VipsForeignSaveSpngFile (pngsave), save image to file as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// filename: `&str` -> Filename to save to
 
@@ -14219,7 +15876,7 @@ pub struct PngsaveOptions {
     /// interlace: `bool` -> Interlace image
     /// default: false
     pub interlace: bool,
-    /// filter: `ForeignPngFilter` -> libpng row filter flag(s)
+    /// filter: `ForeignPngFilter` -> libspng row filter flag(s)
     ///  `None` -> VIPS_FOREIGN_PNG_FILTER_NONE = 8 [DEFAULT]
     ///  `Sub` -> VIPS_FOREIGN_PNG_FILTER_SUB = 16
     ///  `Up` -> VIPS_FOREIGN_PNG_FILTER_UP = 32
@@ -14279,7 +15936,7 @@ impl std::default::Default for PngsaveOptions {
     }
 }
 
-/// VipsForeignSavePngFile (pngsave), save image to png file (.png), priority=0, rgba
+/// VipsForeignSaveSpngFile (pngsave), save image to file as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// filename: `&str` -> Filename to save to
 /// pngsave_options: `&PngsaveOptions` -> optional arguments
@@ -14364,7 +16021,7 @@ pub fn pngsave_with_opts(
     }
 }
 
-/// VipsForeignSavePngBuffer (pngsave_buffer), save image to png buffer (.png), priority=0, rgba
+/// VipsForeignSaveSpngBuffer (pngsave_buffer), save image to buffer as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// returns `Vec<u8>` - Buffer to save to
 pub fn pngsave_buffer(inp: &VipsImage) -> Result<Vec<u8>> {
@@ -14392,7 +16049,7 @@ pub struct PngsaveBufferOptions {
     /// interlace: `bool` -> Interlace image
     /// default: false
     pub interlace: bool,
-    /// filter: `ForeignPngFilter` -> libpng row filter flag(s)
+    /// filter: `ForeignPngFilter` -> libspng row filter flag(s)
     ///  `None` -> VIPS_FOREIGN_PNG_FILTER_NONE = 8 [DEFAULT]
     ///  `Sub` -> VIPS_FOREIGN_PNG_FILTER_SUB = 16
     ///  `Up` -> VIPS_FOREIGN_PNG_FILTER_UP = 32
@@ -14452,7 +16109,7 @@ impl std::default::Default for PngsaveBufferOptions {
     }
 }
 
-/// VipsForeignSavePngBuffer (pngsave_buffer), save image to png buffer (.png), priority=0, rgba
+/// VipsForeignSaveSpngBuffer (pngsave_buffer), save image to buffer as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// pngsave_buffer_options: `&PngsaveBufferOptions` -> optional arguments
 /// returns `Vec<u8>` - Buffer to save to
@@ -14545,7 +16202,7 @@ pub fn pngsave_buffer_with_opts(
     }
 }
 
-/// VipsForeignSavePngTarget (pngsave_target), save image to target as PNG (.png), priority=0, rgba
+/// VipsForeignSaveSpngTarget (pngsave_target), save image to target as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// target: `&VipsTarget` -> Target to save to
 
@@ -14568,7 +16225,7 @@ pub struct PngsaveTargetOptions {
     /// interlace: `bool` -> Interlace image
     /// default: false
     pub interlace: bool,
-    /// filter: `ForeignPngFilter` -> libpng row filter flag(s)
+    /// filter: `ForeignPngFilter` -> libspng row filter flag(s)
     ///  `None` -> VIPS_FOREIGN_PNG_FILTER_NONE = 8 [DEFAULT]
     ///  `Sub` -> VIPS_FOREIGN_PNG_FILTER_SUB = 16
     ///  `Up` -> VIPS_FOREIGN_PNG_FILTER_UP = 32
@@ -14628,7 +16285,7 @@ impl std::default::Default for PngsaveTargetOptions {
     }
 }
 
-/// VipsForeignSavePngTarget (pngsave_target), save image to target as PNG (.png), priority=0, rgba
+/// VipsForeignSaveSpngTarget (pngsave_target), save image to target as PNG (.png), priority=0, rgba
 /// inp: `&VipsImage` -> Image to save
 /// target: `&VipsTarget` -> Target to save to
 /// pngsave_target_options: `&PngsaveTargetOptions` -> optional arguments
@@ -17774,6 +19431,431 @@ pub fn heifsave_target_with_opts(
             NULL,
         );
         utils::result(vips_op_response, (), Error::HeifsaveTargetError)
+    }
+}
+
+/// VipsForeignSaveJxlFile (jxlsave), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// filename: `&str` -> Filename to load from
+
+pub fn jxlsave(inp: &VipsImage, filename: &str) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let filename_in: CString = utils::new_c_string(filename)?;
+
+        let vips_op_response = bindings::vips_jxlsave(inp_in, filename_in.as_ptr(), NULL);
+        utils::result(vips_op_response, (), Error::JxlsaveError)
+    }
+}
+
+/// Options for jxlsave operation
+#[derive(Clone, Debug)]
+pub struct JxlsaveOptions {
+    /// tier: `i32` -> Decode speed tier
+    /// min: 0, max: 4, default: 0
+    pub tier: i32,
+    /// distance: `f64` -> Target butteraugli distance
+    /// min: 0, max: 25, default: 1
+    pub distance: f64,
+    /// effort: `i32` -> Encoding effort
+    /// min: 3, max: 9, default: 7
+    pub effort: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Quality factor
+    /// min: 0, max: 100, default: 75
+    pub q: i32,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for JxlsaveOptions {
+    fn default() -> Self {
+        JxlsaveOptions {
+            tier: i32::from(0),
+            distance: f64::from(1),
+            effort: i32::from(7),
+            lossless: false,
+            q: i32::from(75),
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJxlFile (jxlsave), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// filename: `&str` -> Filename to load from
+/// jxlsave_options: `&JxlsaveOptions` -> optional arguments
+
+pub fn jxlsave_with_opts(
+    inp: &VipsImage,
+    filename: &str,
+    jxlsave_options: &JxlsaveOptions,
+) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let filename_in: CString = utils::new_c_string(filename)?;
+
+        let tier_in: i32 = jxlsave_options.tier;
+        let tier_in_name = utils::new_c_string("tier")?;
+
+        let distance_in: f64 = jxlsave_options.distance;
+        let distance_in_name = utils::new_c_string("distance")?;
+
+        let effort_in: i32 = jxlsave_options.effort;
+        let effort_in_name = utils::new_c_string("effort")?;
+
+        let lossless_in: i32 = if jxlsave_options.lossless { 1 } else { 0 };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jxlsave_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let keep_in: i32 = jxlsave_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jxlsave_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jxlsave_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jxlsave_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jxlsave(
+            inp_in,
+            filename_in.as_ptr(),
+            tier_in_name.as_ptr(),
+            tier_in,
+            distance_in_name.as_ptr(),
+            distance_in,
+            effort_in_name.as_ptr(),
+            effort_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(vips_op_response, (), Error::JxlsaveError)
+    }
+}
+
+/// VipsForeignSaveJxlBuffer (jxlsave_buffer), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// returns `Vec<u8>` - Buffer to save to
+pub fn jxlsave_buffer(inp: &VipsImage) -> Result<Vec<u8>> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let mut buffer_buf_size: u64 = 0;
+        let mut buffer_out: *mut c_void = null_mut();
+
+        let vips_op_response =
+            bindings::vips_jxlsave_buffer(inp_in, &mut buffer_out, &mut buffer_buf_size, NULL);
+        utils::result(
+            vips_op_response,
+            utils::new_byte_array(buffer_out, buffer_buf_size),
+            Error::JxlsaveBufferError,
+        )
+    }
+}
+
+/// Options for jxlsave_buffer operation
+#[derive(Clone, Debug)]
+pub struct JxlsaveBufferOptions {
+    /// tier: `i32` -> Decode speed tier
+    /// min: 0, max: 4, default: 0
+    pub tier: i32,
+    /// distance: `f64` -> Target butteraugli distance
+    /// min: 0, max: 25, default: 1
+    pub distance: f64,
+    /// effort: `i32` -> Encoding effort
+    /// min: 3, max: 9, default: 7
+    pub effort: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Quality factor
+    /// min: 0, max: 100, default: 75
+    pub q: i32,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for JxlsaveBufferOptions {
+    fn default() -> Self {
+        JxlsaveBufferOptions {
+            tier: i32::from(0),
+            distance: f64::from(1),
+            effort: i32::from(7),
+            lossless: false,
+            q: i32::from(75),
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJxlBuffer (jxlsave_buffer), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// jxlsave_buffer_options: `&JxlsaveBufferOptions` -> optional arguments
+/// returns `Vec<u8>` - Buffer to save to
+pub fn jxlsave_buffer_with_opts(
+    inp: &VipsImage,
+    jxlsave_buffer_options: &JxlsaveBufferOptions,
+) -> Result<Vec<u8>> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let mut buffer_buf_size: u64 = 0;
+        let mut buffer_out: *mut c_void = null_mut();
+
+        let tier_in: i32 = jxlsave_buffer_options.tier;
+        let tier_in_name = utils::new_c_string("tier")?;
+
+        let distance_in: f64 = jxlsave_buffer_options.distance;
+        let distance_in_name = utils::new_c_string("distance")?;
+
+        let effort_in: i32 = jxlsave_buffer_options.effort;
+        let effort_in_name = utils::new_c_string("effort")?;
+
+        let lossless_in: i32 = if jxlsave_buffer_options.lossless {
+            1
+        } else {
+            0
+        };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jxlsave_buffer_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let keep_in: i32 = jxlsave_buffer_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jxlsave_buffer_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jxlsave_buffer_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jxlsave_buffer_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jxlsave_buffer(
+            inp_in,
+            &mut buffer_out,
+            &mut buffer_buf_size,
+            tier_in_name.as_ptr(),
+            tier_in,
+            distance_in_name.as_ptr(),
+            distance_in,
+            effort_in_name.as_ptr(),
+            effort_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(
+            vips_op_response,
+            utils::new_byte_array(buffer_out, buffer_buf_size),
+            Error::JxlsaveBufferError,
+        )
+    }
+}
+
+/// VipsForeignSaveJxlTarget (jxlsave_target), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// target: `&VipsTarget` -> Target to save to
+
+pub fn jxlsave_target(inp: &VipsImage, target: &VipsTarget) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let target_in: *mut bindings::VipsTarget = target.ctx;
+
+        let vips_op_response = bindings::vips_jxlsave_target(inp_in, target_in, NULL);
+        utils::result(vips_op_response, (), Error::JxlsaveTargetError)
+    }
+}
+
+/// Options for jxlsave_target operation
+#[derive(Clone, Debug)]
+pub struct JxlsaveTargetOptions {
+    /// tier: `i32` -> Decode speed tier
+    /// min: 0, max: 4, default: 0
+    pub tier: i32,
+    /// distance: `f64` -> Target butteraugli distance
+    /// min: 0, max: 25, default: 1
+    pub distance: f64,
+    /// effort: `i32` -> Encoding effort
+    /// min: 3, max: 9, default: 7
+    pub effort: i32,
+    /// lossless: `bool` -> Enable lossless compression
+    /// default: false
+    pub lossless: bool,
+    /// q: `i32` -> Quality factor
+    /// min: 0, max: 100, default: 75
+    pub q: i32,
+    /// keep: `ForeignKeep` -> Which metadata to retain
+    ///  `None` -> VIPS_FOREIGN_KEEP_NONE = 0
+    ///  `Exif` -> VIPS_FOREIGN_KEEP_EXIF = 1
+    ///  `Xmp` -> VIPS_FOREIGN_KEEP_XMP = 2
+    ///  `Iptc` -> VIPS_FOREIGN_KEEP_IPTC = 4
+    ///  `Icc` -> VIPS_FOREIGN_KEEP_ICC = 8
+    ///  `Other` -> VIPS_FOREIGN_KEEP_OTHER = 16
+    ///  `All` -> VIPS_FOREIGN_KEEP_ALL = 31 [DEFAULT]
+    pub keep: ForeignKeep,
+    /// background: `Vec<f64>` -> Background value
+    pub background: Vec<f64>,
+    /// page_height: `i32` -> Set page height for multipage save
+    /// min: 0, max: 10000000, default: 0
+    pub page_height: i32,
+    /// profile: `String` -> Filename of ICC profile to embed
+    pub profile: String,
+}
+
+impl std::default::Default for JxlsaveTargetOptions {
+    fn default() -> Self {
+        JxlsaveTargetOptions {
+            tier: i32::from(0),
+            distance: f64::from(1),
+            effort: i32::from(7),
+            lossless: false,
+            q: i32::from(75),
+            keep: ForeignKeep::All,
+            background: Vec::new(),
+            page_height: i32::from(0),
+            profile: String::from("sRGB"),
+        }
+    }
+}
+
+/// VipsForeignSaveJxlTarget (jxlsave_target), save image in JPEG-XL format (.jxl), priority=0, untrusted, any
+/// inp: `&VipsImage` -> Image to save
+/// target: `&VipsTarget` -> Target to save to
+/// jxlsave_target_options: `&JxlsaveTargetOptions` -> optional arguments
+
+pub fn jxlsave_target_with_opts(
+    inp: &VipsImage,
+    target: &VipsTarget,
+    jxlsave_target_options: &JxlsaveTargetOptions,
+) -> Result<()> {
+    unsafe {
+        let inp_in: *mut bindings::VipsImage = inp.ctx;
+        let target_in: *mut bindings::VipsTarget = target.ctx;
+
+        let tier_in: i32 = jxlsave_target_options.tier;
+        let tier_in_name = utils::new_c_string("tier")?;
+
+        let distance_in: f64 = jxlsave_target_options.distance;
+        let distance_in_name = utils::new_c_string("distance")?;
+
+        let effort_in: i32 = jxlsave_target_options.effort;
+        let effort_in_name = utils::new_c_string("effort")?;
+
+        let lossless_in: i32 = if jxlsave_target_options.lossless {
+            1
+        } else {
+            0
+        };
+        let lossless_in_name = utils::new_c_string("lossless")?;
+
+        let q_in: i32 = jxlsave_target_options.q;
+        let q_in_name = utils::new_c_string("Q")?;
+
+        let keep_in: i32 = jxlsave_target_options.keep as i32;
+        let keep_in_name = utils::new_c_string("keep")?;
+
+        let background_wrapper =
+            utils::VipsArrayDoubleWrapper::from(&jxlsave_target_options.background[..]);
+        let background_in = background_wrapper.ctx;
+        let background_in_name = utils::new_c_string("background")?;
+
+        let page_height_in: i32 = jxlsave_target_options.page_height;
+        let page_height_in_name = utils::new_c_string("page-height")?;
+
+        let profile_in: CString = utils::new_c_string(&jxlsave_target_options.profile)?;
+        let profile_in_name = utils::new_c_string("profile")?;
+
+        let vips_op_response = bindings::vips_jxlsave_target(
+            inp_in,
+            target_in,
+            tier_in_name.as_ptr(),
+            tier_in,
+            distance_in_name.as_ptr(),
+            distance_in,
+            effort_in_name.as_ptr(),
+            effort_in,
+            lossless_in_name.as_ptr(),
+            lossless_in,
+            q_in_name.as_ptr(),
+            q_in,
+            keep_in_name.as_ptr(),
+            keep_in,
+            background_in_name.as_ptr(),
+            background_in,
+            page_height_in_name.as_ptr(),
+            page_height_in,
+            profile_in_name.as_ptr(),
+            profile_in.as_ptr(),
+            NULL,
+        );
+        utils::result(vips_op_response, (), Error::JxlsaveTargetError)
     }
 }
 

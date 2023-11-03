@@ -1191,9 +1191,8 @@ fn main() {
         "VipsLinear",
         "VipsGetpoint",
         "VipsCase",
-        // TODO: remove after a new version from libvips is generated including those functions in the C library
-        "VipsForeignLoadJpegSource",
-        "VipsForeignLoadSvgSource",
+        "VipsForeignLoadFitsSource",
+        "VipsForeignSaveFits",
     ];
 
     println!("cargo:rustc-link-lib=vips");
